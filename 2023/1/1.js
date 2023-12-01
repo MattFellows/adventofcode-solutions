@@ -54,7 +54,7 @@ const parseNumbersFromLines = (lines) => {
         if (matching && currentSubMap[lineChars[i]]) {
           currentSubMap = currentSubMap[lineChars[i]]
           currentStrMatch = currentStrMatch + lineChars[i]
-          //console.log('Matching: ', lineChars[i], currentSubMap, currentStrMatch)
+          console.log('Matching: ', lineChars[i], currentSubMap, currentStrMatch)
           if (Number.isInteger(currentSubMap)) {
             firstDigit = ""+currentSubMap
             break
@@ -77,6 +77,8 @@ const parseNumbersFromLines = (lines) => {
       for (let i = lineChars.length-1; i > -1; i--) {
         if (matching && currentSubMap[lineChars[i]]) {
           currentSubMap = currentSubMap[lineChars[i]]
+          currentStrMatch = currentStrMatch + lineChars[i]
+          console.log('Matching: ', lineChars[i], currentSubMap, currentStrMatch)
           if (Number.isInteger(currentSubMap)) {
             lastDigit = ""+currentSubMap
             break
@@ -84,10 +86,12 @@ const parseNumbersFromLines = (lines) => {
         } else if (matching) {
           matching = false
           currentSubMap = null;
+          i = i + (currentStrMatch.length - 1);
         }
         if (!matching && backwardNumericMap[lineChars[i]]) {
           matching = true;
           currentSubMap = backwardNumericMap[lineChars[i]];
+          currentStrMatch = lineChars[i]
         } else if (!matching && Number.isInteger(parseInt(lineChars[i], 10))) {
           lastDigit = lineChars[i]
           break
@@ -111,5 +115,5 @@ const parseNumbersFromLines = (lines) => {
 
 }
 
-var BUFFER = bufferFile('./input.txt');
+const BUFFER = bufferFile('./input.txt');
 console.log(parseNumbersFromLines(BUFFER))
