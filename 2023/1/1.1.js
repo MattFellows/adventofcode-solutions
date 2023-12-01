@@ -1,6 +1,5 @@
 var fs = require('fs');
 var path = require('path');
-var BUFFER = bufferFile('./input.txt');
 
 const numbers = ["one","two","three","four","five","six","seven","eight","nine","1","2","3","4","5","6","7","8","9"];
 
@@ -23,7 +22,7 @@ const parseNumbersFromLines = (lines) => {
       const firstDigit = getNumFromIndex(indexesForward.sort((i1, i2) => i1.value - i2.value)[0]);
       const lastDigit  = getNumFromIndex(indexesBackward.sort((i1, i2) => i2.value - i1.value)[0]);
 
-      //console.log(`${line} => ${firstDigit.toString()}${lastDigit.toString()}`, indexesForward, indexesBackward);
+      console.log(`${line} => ${firstDigit.toString()}${lastDigit.toString()}`);
       return (firstDigit || lastDigit).toString() + (lastDigit || firstDigit).toString();
     })
     
@@ -34,4 +33,5 @@ const parseNumbersFromLines = (lines) => {
   return sum;
 }
 
+const BUFFER = bufferFile('./input.txt');
 console.log(parseNumbersFromLines(BUFFER));
