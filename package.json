@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "run-day-2": "ts-node 2023/2/2.ts"
+  },
   "dependencies": {
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.2"
   }
 }
