@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "run-day-2": "ts-node 2023/2/2.ts"
+    "run-day-2": "ts-node 2023/2/2.ts",
+    "run-day-3": "ts-node 2023/3/3.ts"
   },
   "dependencies": {
     "request": "^2.88.2",
