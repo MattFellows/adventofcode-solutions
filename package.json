@@ -4,6 +4,7 @@
     "run-day-3": "ts-node 2023/3/3.ts"
   },
   "dependencies": {
+    "lodash": "^4.17.21",
     "request": "^2.88.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
