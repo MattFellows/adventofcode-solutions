@@ -2,5 +2,9 @@
   "name": "2024",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "makeFolder": "mkdir day${DAY}ts",
+    "newDay": "bun run makeFolder && cp -R dayTemplateTS/* day${DAY}ts && mv day${DAY}ts/questionNpart1.ts day${DAY}ts/question${DAY}part1.ts && mv day${DAY}ts/questionNpart2.ts day${DAY}ts/question${DAY}part2.ts"
+  }
 }
