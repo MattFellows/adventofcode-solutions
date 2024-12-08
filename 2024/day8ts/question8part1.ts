@@ -4,7 +4,7 @@ interface PossibleNode {
     node: string
     x: number
     y: number
-    antitNodes?: PossibleNode[]
+    antiNodes?: PossibleNode[]
 }
 
 const input = fs.readFileSync('./input.txt').toString()
@@ -39,12 +39,12 @@ const addAntiNodes = (nodes:PossibleNode[]) => {
             if (n1.x !== n2.x || n1.y !== n2.y) {
                 const antiNodes = findAntiNodes(n1,n2)
                 antiNodes.forEach(a => {
-                    if (!grid[a.y][a.x].antitNodes) {
-                        grid[a.y][a.x].antitNodes = []
+                    if (!grid[a.y][a.x].antiNodes) {
+                        grid[a.y][a.x].antiNodes = []
                     }
                     const antiNode = {...n1};
                     antiNode.node
-                    grid[a.y][a.x].antitNodes?.push(antiNode)
+                    grid[a.y][a.x].antiNodes!.push(antiNode)
                 })
             }
         })
@@ -57,7 +57,7 @@ const foundNodeTypes:string[] = []
 for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
         const possibleNode = grid[y][x]
-        if (possibleNode.node.match(/^[A-Z0-9]$/) && !foundNodeTypes.includes(possibleNode.node)) {
+        if (possibleNode.node.match(/^[a-zA-Z0-9]$/) && !foundNodeTypes.includes(possibleNode.node)) {
             foundNodeTypes.push(possibleNode.node)
             const allNodesOfType:PossibleNode[] = [possibleNode, ...findOtherNodes(possibleNode)]
             addAntiNodes(allNodesOfType)
@@ -67,10 +67,10 @@ for (let y = 0; y < grid.length; y++) {
 
 
 console.log(grid.map(l => l.map(n => {
-    return n.node !== '.' ? n.node : n.antitNodes ? '#' : n.node
+    return n.node !== '.' ? n.node : n.antiNodes ? '#' : n.node
 }).join("")).join("\n"))
 
 
-console.log(grid.map(l => l.map(n => n.node === '.' ? n.antitNodes?.length||0 : 0).reduce((p,c) => p+c)).reduce((p,c) => p+c))
+console.log(grid.map(l => l.map(n => n.antiNodes ? 1 : 0).reduce((p,c) => p+c)).reduce((p,c) => p+c))
 
 
