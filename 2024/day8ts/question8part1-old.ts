@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { makeGrid } from './utils/grid'
 
 interface PossibleNode {
     node: string
@@ -10,6 +11,9 @@ interface PossibleNode {
 const input = fs.readFileSync('./input.txt').toString()
 const lines = input.split("\n").map(l => l.trim())
 const grid:PossibleNode[][] = lines.map((l,y) => l.split("").map((c,x) => ({node: c, x: Number(x), y: Number(y)})))
+
+const grid2 = makeGrid(input, (x,y,v) => ({node: v, val:v, x: Number(x), y: Number(y)}))
+console.log(grid2)
 
 console.log(grid.map(l => l.map(n => n.node).join("")).join("\n"))
 
@@ -26,17 +30,10 @@ const findOtherNodes = (node: PossibleNode) => {
 
 const findAntiNodes = (n1:PossibleNode, n2: PossibleNode):PossibleNode[] => {
     console.log("Find Antinodes: ", n1, n2)
-    const dx = (n2.x - n1.x)
-    const dy = (n2.y - n1.y)
-    let an1X = n1.x - dx
-    let an1Y = n1.y - dy
-    const antiNodes: PossibleNode[] = [n1];
-    while(grid?.[an1Y]?.[an1X]) {
-        antiNodes.push(grid?.[an1Y]?.[an1X])
-        an1X = an1X - dx
-        an1Y = an1Y - dy
-    }
-    return antiNodes.filter(a => a !== undefined)
+    const an1X = n1.x - (n2.x - n1.x)
+    const an1Y = n1.y - (n2.y - n1.y)
+    console.log(an1X, an1Y)
+    return [grid?.[an1Y]?.[an1X]].filter(a => a !== undefined)
 }
 
 const addAntiNodes = (nodes:PossibleNode[]) => {
@@ -74,7 +71,7 @@ for (let y = 0; y < grid.length; y++) {
 
 
 console.log(grid.map(l => l.map(n => {
-    return n.antiNodes ? '#' : n.node
+    return n.node !== '.' ? n.node : n.antiNodes ? '#' : n.node
 }).join("")).join("\n"))
 
 
