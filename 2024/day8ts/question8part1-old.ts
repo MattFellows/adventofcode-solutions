@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { makeGrid } from './utils/grid'
+import { makeGrid } from '../utils/grid'
 
 interface PossibleNode {
     node: string

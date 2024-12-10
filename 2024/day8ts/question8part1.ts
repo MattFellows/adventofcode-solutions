@@ -1,6 +1,6 @@
 import fs from 'fs'
-import { makeGrid, printGrid } from './utils/grid'
-import { LOG_LEVELS, log } from './utils/log'
+import { makeGrid, printGrid } from '../utils/grid'
+import { LOG_LEVELS, log } from '../utils/log'
 
 interface PossibleNode {
     node: string
@@ -12,7 +12,7 @@ interface PossibleNode {
 
 const input = fs.readFileSync('./input.txt').toString()
 const lines = input.split("\n").map(l => l.trim())
-const grid = makeGrid<PossibleNode>(input, (x,y,v) => ({x: Number(x), val:{node: v, x: Number(x), y: Number(y), toString: () => v}}))
+const grid = makeGrid<PossibleNode>(input, (x,y,v) => ({x: Number(x), y: Number(y), val:{node: v, x: Number(x), y: Number(y), toString: () => v}}))
 printGrid(grid)
 
 const findOtherNodes = (node: PossibleNode) => {
