@@ -15,6 +15,7 @@ export interface Row<T extends Serialisable> {
 export interface Grid<T extends Serialisable> {
     rows: Row<T>[]
     row(index:number):Row<T> 
+    cellCount?:number
 }
 
 export interface CellProducer<T extends Serialisable> {
@@ -41,5 +42,9 @@ export const makeGrid = <T extends Serialisable>(allLines:string, producer: Cell
 
 export const printGrid = <T extends Serialisable>(grid:Grid<T>, joiner:string = ""):void => {
     log(LOG_LEVELS.INFO, grid.rows.map((r) => r.cells.map(c => c.val.toString()).join(joiner)).join('\n'))
+}
+
+export const getCardinalNeighbors = <T extends Serialisable>(grid:Grid<T>, cell:Cell<T>):Cell<T>[] => {
+    return [grid.rows[cell.y]?.cells?.[cell.x - 1], grid.rows[cell.y]?.cells?.[cell.x + 1], grid.rows[cell.y - 1]?.cells?.[cell.x], grid.rows[cell.y+1]?.cells?.[cell.x]].filter(a => !!a)
 }
 
