@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { Cell, Grid, Row, getCardinalNeighbors, makeGrid, printGrid } from '../utils/grid'
+import { Cell, Dir, Grid, Row, getAheadCell, getCardinalNeighbors, getLeftCell, getRightCell, makeGrid, printGrid, rotateACW, rotateCW } from '../utils/grid'
 
 const input = fs.readFileSync('./input-small.txt').toString()
 const grid = makeGrid<string>(input)
@@ -108,20 +108,6 @@ const makeSubGrid = (area:ContiguousArea):Grid<string> => {
     return grid
 }
 
-const rotateCW = (dir:number):number => {
-    if (dir === 3) {
-        return 0
-    }
-    return (dir+1)
-}
-
-const rotateACW = (dir:number):number => {
-    if (dir === 0) {
-        return 3
-    }
-    return (dir-1)
-}
-
 const countLeftHandCorners = (grid:Grid<string>, x:number, y:number):number => {
     let cell = grid.rows[y].cells[x]
     let corners = 0
@@ -191,24 +177,3 @@ console.log(countSides(subGrids[0]))
 // const costs = perims.map(g => g.countSides * (g.cellCount||0))
 
 // console.log(costs.reduce((p,c) => p+c))
-
-function getAheadCell(dir: number, grid: Grid<string>, y: number, x: number) {
-    return dir === 0 ? grid.rows[y - 1]?.cells?.[x] :
-        dir === 1 ? grid.rows[y]?.cells?.[x + 1] :
-            dir === 2 ? grid.rows[y + 1]?.cells?.[x] :
-                grid.rows[y]?.cells?.[x - 1]
-}
-
-function getLeftCell(dir: number, grid: Grid<string>, y: number, x: number) {
-    return dir === 1 ? grid.rows[y - 1]?.cells?.[x] :
-        dir === 2 ? grid.rows[y]?.cells?.[x + 1] :
-            dir === 3 ? grid.rows[y + 1]?.cells?.[x] :
-                grid.rows[y]?.cells?.[x - 1]
-}
-
-function getRightCell(dir: number, grid: Grid<string>, y: number, x: number) {
-    return dir === 1 ? grid.rows[y + 1]?.cells?.[x] :
-        dir === 2 ? grid.rows[y]?.cells?.[x - 1] :
-            dir === 3 ? grid.rows[y - 1]?.cells?.[x] :
-                grid.rows[y]?.cells?.[x + 1]
-}

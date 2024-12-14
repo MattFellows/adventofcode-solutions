@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { Location } from '../utils/grid'
 
 const input = fs.readFileSync('./input.txt').toString()
 const machinesStr = input.split("\n").map(l => l.trim()).join("::").split("::::").map(l => l.trim())
@@ -6,11 +7,6 @@ const machinesStr = input.split("\n").map(l => l.trim()).join("::").split("::::"
 interface Button {
     dx:number
     dy:number
-}
-
-interface Location {
-    x:number
-    y:number
 }
 
 interface Machine {

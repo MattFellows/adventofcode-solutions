@@ -1,4 +1,6 @@
 import fs from 'fs'
+import { Location } from '../utils/grid'
+import { solveSimultaneous2 } from '../utils/maths'
 
 const input = fs.readFileSync('./input.txt').toString()
 const machinesStr = input.split("\n").map(l => l.trim()).join("::").split("::::").map(l => l.trim())
@@ -6,11 +8,6 @@ const machinesStr = input.split("\n").map(l => l.trim()).join("::").split("::::"
 interface Button {
     dx:number
     dy:number
-}
-
-interface Location {
-    x:number
-    y:number
 }
 
 interface Machine {
@@ -72,10 +69,6 @@ const solveSimultaneous = (machine:Machine):number => {
         return 3*solution[0] + solution[1]
     }
     return 0
-}
-
-function solveSimultaneous2([[a1, b1, c1], [a2, b2, c2]]){
-return [(c1*b2 - c2*b1) / (a1*b2 - a2*b1), (c1*a2 - c2*a1) / (a2*b1 - a1*b2)];
 }
 
 // console.log(machinesStr.map(makeMachineFromString).map(solveSimultaneous))

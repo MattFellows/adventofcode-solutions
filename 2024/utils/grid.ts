@@ -27,6 +27,50 @@ export interface Location {
     y:number
 }
 
+export enum Dir {
+    EAST=1,
+    SOUTH=2,
+    WEST=3,
+    NORTH=0
+}
+
+export const rotateCW = (dir:Dir):number => {
+    if (dir === Dir.WEST) {
+        return Dir.NORTH
+    }
+    return (dir+1)
+}
+
+export const rotateACW = (dir:Dir):number => {
+    if (dir === Dir.NORTH) {
+        return Dir.WEST
+    }
+    return (dir-1)
+}
+
+
+
+export const getAheadCell = <T extends Serialisable>(dir: Dir, grid: Grid<T>, y: number, x: number):Cell<T> => {
+    return dir === Dir.NORTH ? grid.rows[y - 1]?.cells?.[x] :
+        dir === Dir.EAST ? grid.rows[y]?.cells?.[x + 1] :
+            dir === Dir.SOUTH ? grid.rows[y + 1]?.cells?.[x] :
+                grid.rows[y]?.cells?.[x - 1]
+}
+
+export const getLeftCell = <T extends Serialisable>(dir: Dir, grid: Grid<T>, y: number, x: number):Cell<T> => {
+    return dir === Dir.EAST ? grid.rows[y - 1]?.cells?.[x] :
+        dir === Dir.SOUTH ? grid.rows[y]?.cells?.[x + 1] :
+            dir === Dir.WEST ? grid.rows[y + 1]?.cells?.[x] :
+                grid.rows[y]?.cells?.[x - 1]
+}
+
+export const getRightCell = <T extends Serialisable>(dir: number, grid: Grid<T>, y: number, x: number):Cell<T> => {
+    return dir === Dir.EAST ? grid.rows[y + 1]?.cells?.[x] :
+        dir === Dir.SOUTH ? grid.rows[y]?.cells?.[x - 1] :
+            dir === Dir.WEST ? grid.rows[y - 1]?.cells?.[x] :
+                grid.rows[y]?.cells?.[x + 1]
+}
+
 export const filterGrid = <T extends Serialisable>(grid:Grid<T>, filter:T):Cell<T>[] => {
     const matchingGridSquares:Cell<T>[] = []
     grid.rows.forEach(r => r.cells.forEach(c => {
