@@ -22,6 +22,11 @@ export interface CellProducer<T extends Serialisable> {
     (x:number, y:number, v:any):Cell<T>
 }
 
+export interface Location {
+    x:number
+    y:number
+}
+
 export const filterGrid = <T extends Serialisable>(grid:Grid<T>, filter:T):Cell<T>[] => {
     const matchingGridSquares:Cell<T>[] = []
     grid.rows.forEach(r => r.cells.forEach(c => {
