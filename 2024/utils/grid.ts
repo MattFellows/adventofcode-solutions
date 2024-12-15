@@ -57,6 +57,13 @@ export const getAheadCell = <T extends Serialisable>(dir: Dir, grid: Grid<T>, y:
                 grid.rows[y]?.cells?.[x - 1]
 }
 
+export const getBehindCell = <T extends Serialisable>(dir: Dir, grid: Grid<T>, y: number, x: number):Cell<T> => {
+    return dir === Dir.NORTH ? grid.rows[y + 1]?.cells?.[x] :
+        dir === Dir.EAST ? grid.rows[y]?.cells?.[x - 1] :
+            dir === Dir.SOUTH ? grid.rows[y - 1]?.cells?.[x] :
+                grid.rows[y]?.cells?.[x + 1]
+}
+
 export const getLeftCell = <T extends Serialisable>(dir: Dir, grid: Grid<T>, y: number, x: number):Cell<T> => {
     return dir === Dir.EAST ? grid.rows[y - 1]?.cells?.[x] :
         dir === Dir.SOUTH ? grid.rows[y]?.cells?.[x + 1] :
