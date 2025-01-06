@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { Cell, getByValue, makeGrid, printGrid } from '../utils/grid'
+import { Cell, Grid, getByValue, makeGrid, printGrid } from '../utils/grid'
 import { Serialisable } from '../utils/log'
 
 const input = fs.readFileSync('./input-small.txt').toString()
@@ -13,6 +13,7 @@ const directionPadGrid = makeGrid(['#^A','<v>'].join('\n'))
 
 const hThenV = (start:Cell<Serialisable>, destination:Cell<Serialisable>):string => {
     let directionSet = ''
+
     if (destination.x > start.x) {
         // console.log(`Adding >: ${destination.x} - ${start.x} ${''.padStart(destination.x - start.x, '>')}`)
         directionSet += ''.padStart(destination.x - start.x, '>')
@@ -33,6 +34,7 @@ const hThenV = (start:Cell<Serialisable>, destination:Cell<Serialisable>):string
 
 const vThenH = (start:Cell<Serialisable>, destination:Cell<Serialisable>):string => {
     let directionSet = ''
+
     if (destination.y > start.y) {
         // console.log(`Adding v: ${destination.y} - ${start.y} ${''.padStart(destination.y - start.y, 'v')}`)
         directionSet += ''.padStart(destination.y - start.y, 'v')
@@ -45,8 +47,8 @@ const vThenH = (start:Cell<Serialisable>, destination:Cell<Serialisable>):string
         // console.log(`Adding >: ${destination.x} - ${start.x} ${''.padStart(destination.x - start.x, '>')}`)
         directionSet += ''.padStart(destination.x - start.x, '>')
     } else if (destination.x < start.x) {
-        // console.log(`Adding <: ${start.x} - ${destination.x} ${''.padStart(start.x - destination.x, '<')}`)
-        directionSet += ''.padStart(start.x - destination.x, '<')
+         // console.log(`Adding <: ${start.x} - ${destination.x} ${''.padStart(start.x - destination.x, '<')}`)
+         directionSet += ''.padStart(start.x - destination.x, '<')
     }
     return directionSet
 }
@@ -67,7 +69,7 @@ const numberToDirectionSet = (pin:string):string => {
         // console.log('Result: ', directionSet)
         start = destination
     })
-    return directionSet
+    return directionSet.replaceAll('<v<', '<<v').replaceAll('<^<', '<<^')
 }
 
 const directionSetToDirectionSet = (directions:string):string => {
@@ -83,7 +85,41 @@ const directionSetToDirectionSet = (directions:string):string => {
         directionSet += 'A'
         start = destination
     })
-    return directionSet
+    return directionSet.replaceAll('^<A', '<^v').replaceAll('v<A', '<vA')
+}
+
+const followDirectionsOnPad = (directions:string, pad:Grid<Serialisable>):string => {
+    let directionsResult = ''
+    let current = getByValue(pad, 'A')
+    let presses = directions.split('A')
+    presses = presses.slice(0, presses.length-1)
+    // console.log(directions, presses)
+    presses.forEach(p => {
+        // console.log(`Following: ${p}`)
+        if (p && p.length > 0) {
+            p.split('').forEach(b => {
+                // console.log(`${current.x},${current.y} ${b}`)
+                switch (b) {
+                    case 'v':
+                        current = pad.rows[current.y+1].cells[current.x]
+                        break
+                    case '<':
+                        current = pad.rows[current.y].cells[current.x-1]
+                        break
+                    case '>':
+                        current = pad.rows[current.y].cells[current.x+1]
+                        break
+                    case '^':
+                        current = pad.rows[current.y-1].cells[current.x]
+                        break
+                }
+            })
+        }
+        directionsResult += current.val
+        // console.log(`Press: ${current.val}`)
+    })
+    // console.log('Result: ', directionsResult)
+    return directionsResult
 }
 
 // console.log(numberToDirectionSet('029A'))
@@ -100,9 +136,19 @@ const expectedResults = ['029A: <vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA
 const result = lines.map((l,c) => {
     const myPresses = directionSetToDirectionSet(directionSetToDirectionSet(numberToDirectionSet(l)))
     const expected = expectedResults[c]
-    console.log(`${l}: ${myPresses}` === expected)
-    console.log(`${l}: ${myPresses}`.length === expected.length)
+    console.log(`${l}: ${parseInt(l, 10)}`)
+    console.log(`${l}: ${myPresses}`)
+    // console.log(`${followDirectionsOnPad(myPresses,directionPadGrid)}`)
+    // console.log(`${followDirectionsOnPad(followDirectionsOnPad(myPresses,directionPadGrid),directionPadGrid)}`)
+    console.log(`${followDirectionsOnPad(followDirectionsOnPad(followDirectionsOnPad(myPresses,directionPadGrid),directionPadGrid),numberPadGrid)}`)
+    
     return (myPresses.length * parseInt(l, 10))
 }).reduce((p,c) => p+c)
 
 console.log(result)
+printGrid(numberPadGrid)
+printGrid(directionPadGrid)
+console.log('233A')
+console.log(numberToDirectionSet('233A'), numberToDirectionSet('233A').length)
+console.log(directionSetToDirectionSet(numberToDirectionSet('233A')), directionSetToDirectionSet(numberToDirectionSet('233A')).length)
+console.log(directionSetToDirectionSet(directionSetToDirectionSet(numberToDirectionSet('233A'))), directionSetToDirectionSet(directionSetToDirectionSet(numberToDirectionSet('233A'))).length)

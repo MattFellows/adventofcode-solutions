@@ -1,0 +1,15 @@
+{
+  "name": "2024",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "makeFolder": "mkdir day${DAY}ts",
+    "newDay": "bun run makeFolder && cp -R dayTemplateTS/* day${DAY}ts && mv day${DAY}ts/questionNpart1.ts day${DAY}ts/question${DAY}part1.ts && mv day${DAY}ts/questionNpart2.ts day${DAY}ts/question${DAY}part2.ts",
+    "part1": "cd day${DAY}ts/ && bun --max-old-space-size=8192 question${DAY}part1.ts && cd -",
+    "part2": "cd day${DAY}ts/ && bun --max-old-space-size=8192 question${DAY}part2.ts && cd -"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2"
+  }
+}
