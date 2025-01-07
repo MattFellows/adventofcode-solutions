@@ -6,4 +6,4 @@ const program = input.split(",").map(l => Number(l.trim()))
 
 const intCode = IntCode()
 intCode.setProgram(program)
-console.log(intCode.process())
+console.log(await intCode.process())

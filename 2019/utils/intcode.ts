@@ -1,31 +1,87 @@
-export const IntCode = () => {
-    let input:number[]
-    let output:number[]
-    let program:number[]
+import { sleep } from "./utils"
+
+export const IntCode = (p?:number[]) => {
+    let input:number[] = []
+    let output:number[] = []
+    let program:number[] = []
+    let outputListeners:((o:number) => void)[] = []
+    let execPtr:number = 0
+    let name:string = ''
+    let paused:boolean = false
+
+    const setName = (s:string) => {
+        name = s
+    }
+
+    const registerOutputHandler = (f: (o:number) => void) => {
+        outputListeners.push(f)
+    }
+
+    const togglePause = () => {
+        paused = !paused
+    }
 
     const setInput = (i:number[]) => {
-        input = i
+        // console.log(name, 'Setting Input to: ', i)
+        input = [...i]
+    }
+
+    const addInput = (i:number) => {
+        // console.log(name, 'Adding to Input: ', i)
+        input.push(i)
     }
 
     const getOutput = ():number[] => {
-        return output
+        return [...output]
+    }
+
+    const awaitOutput = async():Promise<number[]> => {
+        // console.log('WAIT FOR OUTPUT')
+        while (!output || output.length <= 0) {
+            // console.log(name, 'Waiting: ', output)
+            await sleep(10)
+            // console.log(name, 'Waited: ', output)
+        }
+        const actualOutput = [...output]
+        output = []
+        return actualOutput
+    }
+
+    const awaitInput = async():Promise<number> => {
+        while (!input || input.length <= 0) {
+            // console.log(name, 'Waiting: ', input)
+            await sleep(10)
+            // console.log(name, 'Waited: ', input)
+        }
+        // console.log(name, 'Waited for:', input)
+        return input.shift()!
     }
 
     const setProgram = (p:number[]) => {
-        program = p
+        program = [...p]
     }
     
-    const process = ():number[] => {
+    const didHalt = () => {
+        return program[execPtr] === 99
+    }
+
+    const process = async ():Promise<number[]> => {
         output = []
-        let execPtr = 0
+        let lastExecPtr = -1
         let resultantProgram = [...program]
-        while (resultantProgram[execPtr] != 99) {
-            const progPtr = processOpCode(resultantProgram, execPtr)
-            console.log(progPtr)
+        while (resultantProgram[execPtr] !== 99 && lastExecPtr !== execPtr) {
+            while (paused){await sleep(1000)}
+            const progPtr = await processOpCode(resultantProgram, execPtr)
+            // console.log(name, progPtr)
             resultantProgram = progPtr[0]
+            lastExecPtr = execPtr
             execPtr = progPtr[1]
         }
-        return resultantProgram
+        if (resultantProgram[execPtr] === 99) {
+            // console.log(name, 'HALTING!')
+        }
+        program = [...resultantProgram]
+        return [...resultantProgram]
     }
     
     const getParameterPos = (p:number[],ptr:number,paramMode:number):number => {
@@ -40,8 +96,8 @@ export const IntCode = () => {
         return Number(parameterModes.split('').reverse()?.[ptr]||0)
     }
     
-    const processOpCode = (p:number[],ptr:number):[number[],number] => {
-        // console.log(`process: ${p[ptr]} (${ptr})`)
+    const processOpCode = async (p:number[],ptr:number):Promise<[number[],number]> => {
+        // console.log(name, `process: ${p[ptr]} (${ptr})`)
         const currentProg = [...p]
         let ptrAfter = ptr
         let instruction = `${currentProg[ptr]}`
@@ -68,15 +124,17 @@ export const IntCode = () => {
             }
             case 3: {
                 let param1Pos = getParameterPos(currentProg, ptr+1, getRelativeParamMode(parameterModes, 0))
-                // console.log(`Input to : ${param1Pos}`)
-                currentProg[param1Pos] = input.pop()!
+                const nextInput = await awaitInput()
+                // console.log(name, `Input to : ${param1Pos} (${nextInput})`)
+                currentProg[param1Pos] = nextInput
                 ptrAfter = ptr + 2
                 break
             }
             case 4: {
                 let param1Pos = getParameterPos(currentProg, ptr+1, getRelativeParamMode(parameterModes, 0))
-                console.log('Outputting: ', currentProg[param1Pos])
+                // console.log(name, 'Outputting: ', currentProg[param1Pos])
                 output.push(currentProg[param1Pos])
+                outputListeners.forEach(f => f(currentProg[param1Pos]))
                 ptrAfter = ptr + 2
                 break
             }
@@ -121,9 +179,9 @@ export const IntCode = () => {
                 break
             }
         }
-        // console.log(ptrAfter)
+        // console.log(name, ptrAfter)
         return [currentProg, ptrAfter]
     }
 
-    return {setInput, setProgram, getOutput, process}
+    return {setName, registerOutputHandler, setInput, addInput, setProgram, process, getOutput, didHalt, awaitOutput, togglePause}
 }
