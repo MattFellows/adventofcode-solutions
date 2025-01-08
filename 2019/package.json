@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.2"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0"
   }
 }

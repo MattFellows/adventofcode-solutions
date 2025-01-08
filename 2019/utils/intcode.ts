@@ -8,6 +8,7 @@ export const IntCode = (p?:number[]) => {
     let execPtr:number = 0
     let name:string = ''
     let paused:boolean = false
+    let relativeBase = 0
 
     const setName = (s:string) => {
         name = s
@@ -87,8 +88,10 @@ export const IntCode = (p?:number[]) => {
     const getParameterPos = (p:number[],ptr:number,paramMode:number):number => {
         if (!paramMode || paramMode === 0) {
             return p[ptr]
-        } else {
+        } else if (paramMode === 1) {
             return ptr
+        } else {
+            return relativeBase + p[ptr]
         }
     }
     
@@ -109,7 +112,7 @@ export const IntCode = (p?:number[]) => {
                 let param2Pos = getParameterPos(currentProg, ptr+2, getRelativeParamMode(parameterModes, 1))
                 let param3Pos = getParameterPos(currentProg, ptr+3, getRelativeParamMode(parameterModes, 2))
     
-                currentProg[param3Pos] = currentProg[param1Pos] + currentProg[param2Pos]
+                currentProg[param3Pos] = (currentProg[param1Pos] ?? 0) + (currentProg[param2Pos] || 0)
                 ptrAfter = ptr + 4
                 break
             }
@@ -118,7 +121,7 @@ export const IntCode = (p?:number[]) => {
                 let param2Pos = getParameterPos(currentProg, ptr+2, getRelativeParamMode(parameterModes, 1))
                 let param3Pos = getParameterPos(currentProg, ptr+3, getRelativeParamMode(parameterModes, 2))
     
-                currentProg[param3Pos] = currentProg[param1Pos] * currentProg[param2Pos]
+                currentProg[param3Pos] = (currentProg[param1Pos] ?? 0) * (currentProg[param2Pos] ?? 0)
                 ptrAfter = ptr + 4
                 break
             }
@@ -178,9 +181,16 @@ export const IntCode = (p?:number[]) => {
                 ptrAfter = ptr + 4
                 break
             }
+            case 9: {
+                let param1Pos = getParameterPos(currentProg, ptr+1, getRelativeParamMode(parameterModes, 0))
+                relativeBase = relativeBase + currentProg[param1Pos]
+                ptrAfter = ptr + 2
+                break
+            }
         }
-        // console.log(name, ptrAfter)
-        return [currentProg, ptrAfter]
+        
+        // console.log(name, currentProg.map(a => a === undefined ? 0 : a), ptrAfter)
+        return [currentProg.map(a => a === undefined ? 0 : a), ptrAfter]
     }
 
     return {setName, registerOutputHandler, setInput, addInput, setProgram, process, getOutput, didHalt, awaitOutput, togglePause}
