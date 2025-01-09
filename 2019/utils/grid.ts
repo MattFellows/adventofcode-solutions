@@ -112,8 +112,16 @@ export const getCardinalNeighbors = <T extends Serialisable>(grid:Grid<T>, cell:
     return [grid.rows[cell.y]?.cells?.[cell.x - 1], grid.rows[cell.y]?.cells?.[cell.x + 1], grid.rows[cell.y - 1]?.cells?.[cell.x], grid.rows[cell.y+1]?.cells?.[cell.x]].filter(a => !!a)
 }
 
+export const getByCoords = <T extends Serialisable>(grid:Grid<T>, x:number, y:number):Cell<T> => {
+    return grid.rows[y]?.cells?.[x]
+}
+
 export const getByValue = <T extends Serialisable>(grid:Grid<T>, value:T):Cell<T> => {
     return getByMatcher(grid, (v) => v.val === value)
+}
+
+export const getAllByValue = <T extends Serialisable>(grid:Grid<T>, value:T):Cell<T>[] => {
+    return getAllByMatcher(grid, (v) => v.val === value)
 }
 
 export const getByMatcher = <T extends Serialisable>(grid:Grid<T>, matcher:(a:any) => boolean):Cell<T> => {
@@ -122,6 +130,14 @@ export const getByMatcher = <T extends Serialisable>(grid:Grid<T>, matcher:(a:an
         matchedCell = matchedCell ?? r.cells.find(matcher)
     })
     return matchedCell
+}
+
+export const getAllByMatcher = <T extends Serialisable>(grid:Grid<T>, matcher:(a:any) => boolean):Cell<T>[] => {
+    let matchedCells:Cell<T>[] = []
+    grid.rows.forEach(r => {
+        r.cells.filter(matcher).forEach(c => matchedCells.push(c))
+    })
+    return matchedCells
 }
 
 export const getDir = <T extends Serialisable>(from:Cell<T>, to:Cell<T>):Dir => {
