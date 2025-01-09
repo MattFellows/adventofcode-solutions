@@ -5,6 +5,7 @@ export const IntCode = (p?:number[]) => {
     let output:number[] = []
     let program:number[] = []
     let outputListeners:((o:number) => void)[] = []
+    let inputRequestListeners:(() => number)[] = []
     let execPtr:number = 0
     let name:string = ''
     let paused:boolean = false
@@ -16,6 +17,10 @@ export const IntCode = (p?:number[]) => {
 
     const registerOutputHandler = (f: (o:number) => void) => {
         outputListeners.push(f)
+    }
+
+    const registerInputRequestHandler = (f: () => number) => {
+        inputRequestListeners.push(f)
     }
 
     const togglePause = () => {
@@ -127,6 +132,7 @@ export const IntCode = (p?:number[]) => {
             }
             case 3: {
                 let param1Pos = getParameterPos(currentProg, ptr+1, getRelativeParamMode(parameterModes, 0))
+                inputRequestListeners.forEach(f => input.push(f()))
                 const nextInput = await awaitInput()
                 // console.log(name, `Input to : ${param1Pos} (${nextInput})`)
                 currentProg[param1Pos] = nextInput
@@ -193,5 +199,5 @@ export const IntCode = (p?:number[]) => {
         return [currentProg.map(a => a === undefined ? 0 : a), ptrAfter]
     }
 
-    return {setName, registerOutputHandler, setInput, addInput, setProgram, process, getOutput, didHalt, awaitOutput, togglePause}
+    return {setName, registerOutputHandler, registerInputRequestHandler, setInput, addInput, setProgram, process, getOutput, didHalt, awaitOutput, togglePause}
 }

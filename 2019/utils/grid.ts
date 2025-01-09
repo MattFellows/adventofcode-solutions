@@ -1,4 +1,6 @@
 import { LOG_LEVELS, log, Serialisable } from "./log"
+import { createWriteStream } from 'fs'
+import { PNG } from 'pngjs'
 
 export interface Cell<T extends Serialisable> {
     x: number
@@ -48,7 +50,22 @@ export const rotateACW = (dir:Dir):number => {
     return (dir-1)
 }
 
-
+export const moveDir = (l:Location, d:Dir):Location => {
+    switch (d) {
+        case Dir.NORTH: {
+            return {x:l.x, y:l.y-1}
+        }
+        case Dir.EAST: {
+            return {x:l.x+1, y:l.y}
+        }
+        case Dir.SOUTH: {
+            return {x:l.x, y:l.y+1}
+        }
+        case Dir.WEST: {
+            return {x:l.x-1, y:l.y}
+        }
+    }
+}
 
 export const getAheadCell = <T extends Serialisable>(dir: Dir, grid: Grid<T>, y: number, x: number):Cell<T> => {
     return dir === Dir.NORTH ? grid.rows[y - 1]?.cells?.[x] :
@@ -152,3 +169,35 @@ export const getDir = <T extends Serialisable>(from:Cell<T>, to:Cell<T>):Dir => 
     }
     return Dir.SOUTH
 } 
+
+export const toPNG = async (grid:Grid<number>,fileName:string) => {
+    const width = grid.rows[0].cells.length
+    const height = grid.rows.length
+    const png = new PNG({width, height})
+    
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const idx = (width * y + x) << 2
+            const resolvedPixelVal = grid.rows[y].cells[x].val
+            if (resolvedPixelVal === 0) {
+                png.data[idx] = 0 //red
+                png.data[idx+1] = 0 //green
+                png.data[idx+2] = 0 //blue
+                png.data[idx+3] = 255 //alpha (0 is transparent)
+            } else if (resolvedPixelVal === 1) {
+                png.data[idx] = 255 //red
+                png.data[idx+1] = 255 //green
+                png.data[idx+2] = 255 //blue
+                png.data[idx+3] = 255 //alpha (0 is transparent)
+            } else {
+                png.data[idx] = 0 //red
+                png.data[idx+1] = 0 //green
+                png.data[idx+2] = 0 //blue
+                png.data[idx+3] = 0 //alpha (0 is transparent)
+            }
+            
+        }
+    }
+
+    await new Promise((resolve, _reject) => png.pack().pipe(createWriteStream(fileName)).on('finish', resolve))
+}
