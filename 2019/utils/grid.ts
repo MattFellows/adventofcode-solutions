@@ -125,6 +125,11 @@ export const printGrid = <T extends Serialisable>(grid:Grid<T>, joiner:string = 
     log(LOG_LEVELS.INFO, grid.rows.map((r) => r.cells.map(serializer).join(joiner)).join('\n'))
 }
 
+export const reprintGrid = <T extends Serialisable>(grid:Grid<T>, jetty):void => {
+    jetty.clear();
+    jetty.text(grid.rows.map((r) => r.cells.map((c:Cell<T>)=>c?.val?.toString()).join('')).join('\n') + '\n')
+}
+
 export const getCardinalNeighbors = <T extends Serialisable>(grid:Grid<T>, cell:Cell<T>):Cell<T>[] => {
     return [grid.rows[cell.y]?.cells?.[cell.x - 1], grid.rows[cell.y]?.cells?.[cell.x + 1], grid.rows[cell.y - 1]?.cells?.[cell.x], grid.rows[cell.y+1]?.cells?.[cell.x]].filter(a => !!a)
 }
