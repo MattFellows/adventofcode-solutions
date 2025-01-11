@@ -1,6 +1,8 @@
 import { LOG_LEVELS, log, Serialisable } from "./log"
 import { createWriteStream } from 'fs'
 import { PNG } from 'pngjs'
+import logUpdate from 'log-update'
+
 
 export interface Cell<T extends Serialisable> {
     x: number
@@ -125,9 +127,8 @@ export const printGrid = <T extends Serialisable>(grid:Grid<T>, joiner:string = 
     log(LOG_LEVELS.INFO, grid.rows.map((r) => r.cells.map(serializer).join(joiner)).join('\n'))
 }
 
-export const reprintGrid = <T extends Serialisable>(grid:Grid<T>, jetty):void => {
-    jetty.clear();
-    jetty.text(grid.rows.map((r) => r.cells.map((c:Cell<T>)=>c?.val?.toString()).join('')).join('\n') + '\n')
+export const reprintGrid = <T extends Serialisable>(grid:Grid<T>):void => {
+    logUpdate(grid.rows.map((r) => r.cells.map((c:Cell<T>)=>c?.val?.toString()).join('')).join('\n') + '\n')
 }
 
 export const getCardinalNeighbors = <T extends Serialisable>(grid:Grid<T>, cell:Cell<T>):Cell<T>[] => {

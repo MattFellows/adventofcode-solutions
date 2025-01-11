@@ -13,7 +13,7 @@
     "@types/node": "^22.10.2"
   },
   "dependencies": {
-    "jetty": "^0.2.1",
+    "log-update": "^6.1.0",
     "pngjs": "^7.0.0"
   }
 }

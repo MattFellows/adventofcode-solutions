@@ -82,6 +82,7 @@ export const IntCode = (p?:number[]) => {
             resultantProgram = progPtr[0]
             lastExecPtr = execPtr
             execPtr = progPtr[1]
+            sleep(2)
         }
         if (resultantProgram[execPtr] === 99) {
             // console.log(name, 'HALTING!')
